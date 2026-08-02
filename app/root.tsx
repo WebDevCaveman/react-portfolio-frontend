@@ -1,5 +1,6 @@
 import {
   isRouteErrorResponse,
+  Link,
   Links,
   Meta,
   Outlet,
@@ -8,6 +9,8 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import { Icon } from "./components/Icon";
+import Navbar from "./components/Navbar";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -19,13 +22,24 @@ export const links: Route.LinksFunction = () => [
   },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+    href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap",
   },
 ];
 
+// To doda nam te metatagi domyślnie dla kazdej strony, oczywiscie mozemy je sobie nadpisac dodajac je osobno na kzdej ze stron
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Dev Portfolio" },
+    {
+      name: "description",
+      content: "Simple & Friendly Dev Portfolio build with React",
+    },
+  ];
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="light">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -33,7 +47,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <Navbar />
+        <main>{children}</main>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -46,30 +61,37 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
+  let code = "500";
+  let message = "Something went wrong";
   let details = "An unexpected error occurred.";
-  let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
+    code = String(error.status);
+    message = error.status === 404 ? "Page not found" : "Error";
     details =
       error.status === 404
-        ? "The requested page could not be found."
+        ? "The page you're looking for doesn't exist or has been moved."
         : error.statusText || details;
-  } else if (import.meta.env.DEV && error && error instanceof Error) {
+  } else if (import.meta.env.DEV && error instanceof Error) {
     details = error.message;
-    stack = error.stack;
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
-      {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
-          <code>{stack}</code>
-        </pre>
-      )}
-    </main>
+    <div className="flex items-center justify-center py-16">
+      <div className="w-full max-w-xl rounded-[18px] bg-surface shadow-md px-8 py-14 text-center">
+        <p className="font-display font-bold text-d2 text-brand">{code}</p>
+        <h1 className="mt-4 font-display font-semibold text-h4 text-text">
+          {message}
+        </h1>
+        <p className="mt-3 text-body text-text-secondary">{details}</p>
+        <Link
+          to="/"
+          className="mt-8 inline-flex items-center gap-2 rounded-xl bg-brand px-6 py-3 text-button font-semibold text-on-brand shadow-brand hover:bg-brand-hover focus:outline-none focus-visible:ring-4 focus-visible:ring-focus"
+        >
+          <Icon name="arrow-left" size={18} />
+          Back to home
+        </Link>
+      </div>
+    </div>
   );
 }

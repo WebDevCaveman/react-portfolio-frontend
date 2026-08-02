@@ -1,0 +1,26 @@
+{
+  "name": "@webdevcaveman/unity-ui",
+  "version": "2.0.0",
+  "description": "Unity design system — tokens (light + dark) and React components for Next.js + Tailwind v4.",
+  "license": "UNLICENSED",
+  "private": true,
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "dist",
+    "src"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./globals.css": "./dist/globals.css",
+    "./tokens.css": "./dist/tokens.css"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  }
+}

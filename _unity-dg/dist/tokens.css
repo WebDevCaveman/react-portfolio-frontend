@@ -1,0 +1,223 @@
+/* ============================================================
+   Unity Dashboard — Design Tokens
+   Color base + typography, extracted from the Unity Figma kit.
+   Light is the default (:root). Dark overrides under [data-theme="dark"].
+   ============================================================ */
+
+:root, [data-theme="light"] {
+  /* ---- Type families ---- */
+  --font-display: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* ---- Type scale (size / line-height) — from the kit ---- */
+  --text-d1: 96px;   --leading-d1: 104px;   /* Poppins SemiBold */
+  --text-d2: 72px;   --leading-d2: 80px;    /* Poppins SemiBold */
+  --text-d3: 64px;   --leading-d3: 72px;    /* Poppins SemiBold */
+  --text-h1: 56px;   --leading-h1: 64px;    /* Poppins SemiBold */
+  --text-h2: 48px;   --leading-h2: 56px;    /* Poppins SemiBold */
+  --text-h3: 40px;   --leading-h3: 48px;    /* Poppins SemiBold */
+  --text-h4: 32px;   --leading-h4: 40px;    /* Poppins Medium */
+  --text-h5: 24px;   --leading-h5: 32px;    /* Poppins Medium */
+  --text-h6: 18px;   --leading-h6: 28px;    /* Poppins Medium */
+  --text-title: 16px;       --leading-title: 24px;        /* Inter SemiBold */
+  --text-body: 14px;        --leading-body: 22px;         /* Inter Regular */
+  --text-body-sm: 13px;     --leading-body-sm: 20px;      /* Inter Regular */
+  --text-caption-1: 13px;   --leading-caption-1: 16px;    /* Inter Medium */
+  --text-caption-2: 12px;   --leading-caption-2: 16px;    /* Inter Medium */
+  --text-button: 14px;      --leading-button: 20px;       /* Inter SemiBold */
+  --text-button-sm: 13px;   --leading-button-sm: 16px;    /* Inter SemiBold */
+
+  /* ---- Font weights ---- */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* ============================================================
+     PRIMITIVE RAMPS (theme-independent)
+     ============================================================ */
+
+  /* Primary — violet (Main = 500 = #451DA2) */
+  --color-primary-50:  #F1ECFB;
+  --color-primary-100: #E3D9F6;
+  --color-primary-200: #C6B3EC;
+  --color-primary-300: #A488DF;
+  --color-primary-400: #7B4FCF;
+  --color-primary-500: #451DA2;
+  --color-primary-600: #3A1888;
+  --color-primary-700: #2E1369;
+  --color-primary-800: #230F50;
+  --color-primary-900: #190A39;
+  --color-primary-rgb: 69, 29, 162;   /* 500 as r,g,b — for alpha (focus ring, brand shadow) */
+
+  /* Secondary — blue (Main = 500 = #0049C6) */
+  --color-secondary-50:  #E7FAFF;
+  --color-secondary-100: #CDF4FF;
+  --color-secondary-200: #A0D7E7;
+  --color-secondary-300: #5F75EE;
+  --color-secondary-400: #3F8CFF;
+  --color-secondary-500: #0049C6;
+  --color-secondary-600: #253B80;
+  --color-secondary-700: #1B2C66;
+  --color-secondary-800: #142150;
+  --color-secondary-900: #0C1538;
+
+  /* Accent 01 — pink (Main = #FFA2C0) */
+  --color-pink-50:  #FFF0F6;
+  --color-pink-100: #FFEBF6;
+  --color-pink-200: #FFD3E2;
+  --color-pink-300: #FFB7F5;
+  --color-pink-400: #FFA2C0;
+  --color-pink-500: #FF6FA0;
+  --color-pink-600: #F0427E;
+  --color-pink-700: #C72D62;
+
+  /* Accent 02 — amber / orange (Main = #FFCE73) */
+  --color-amber-50:  #FFF6E5;
+  --color-amber-100: #FFE2AC;
+  --color-amber-200: #FFCE73;
+  --color-amber-300: #FF9A7B;
+  --color-amber-400: #FF754C;
+  --color-amber-500: #F2591F;
+  --color-amber-600: #C9450F;
+
+  /* Neutral — cool grey (text anchor = #11142D) */
+  --color-neutral-0:   #FFFFFF;
+  --color-neutral-50:  #F7F7F8;
+  --color-neutral-100: #F1F2F4;
+  --color-neutral-200: #E4E4E4;
+  --color-neutral-300: #D9DBE0;
+  --color-neutral-400: #B2B3BD;
+  --color-neutral-500: #808191;
+  --color-neutral-600: #5B5C6B;
+  --color-neutral-700: #3F4050;
+  --color-neutral-800: #29292C;
+  --color-neutral-900: #1B1D21;
+  --color-neutral-950: #11142D;
+  --color-neutral-1000: #161616;
+
+  /* Feedback */
+  --color-success-500: #7FBA7A;
+  --color-success-100: #E6F2E5;
+  --color-warning-500: #FFCE73;
+  --color-warning-100: #FFF1D6;
+  --color-danger-500:  #FF754C;
+  --color-danger-100:  #FFE6DD;
+  --color-info-500:    #3F8CFF;
+  --color-info-100:    #D1E5FF;
+
+  /* Risk levels — Flat UI Colors "defo" palette */
+  --color-risk-critical-500: #E74C3C; /* Alizarin */
+  --color-risk-critical-100: #FDE3E0;
+  --color-risk-high-500:     #E67E22; /* Carrot */
+  --color-risk-high-100:     #FBEBDC;
+  --color-risk-moderate-500: #F1C40F; /* Sun Flower */
+  --color-risk-moderate-100: #FDF3C7;
+  --color-risk-healthy-500:  #1ABC9C; /* Turquoise */
+  --color-risk-healthy-100:  #D6F4EE;
+  --color-risk-strong-500:   #2ECC71; /* Emerald */
+  --color-risk-strong-100:   #DAF5E4;
+
+  /* ============================================================
+     SEMANTIC ROLES — LIGHT
+     ============================================================ */
+  --canvas: #F0F3F6;
+  --bg: #FBFBFC;
+  --bg-subtle: #F1F2F4;
+  --surface: #FFFFFF;
+  --surface-raised: #FFFFFF;
+  --surface-sunken: #F7F7F8;
+
+  --border: #E4E4E4;
+  --border-subtle: #F1F2F4;
+  --border-strong: #D9DBE0;
+
+  --text: #11142D;
+  --text-secondary: #808191;
+  --text-muted: #B2B3BD;
+  --text-inverse: #FFFFFF;
+
+  /* Brand role → driven by the Primary ramp. Re-skin the brand by
+     editing the --color-primary-* ramp + --color-primary-rgb above;
+     every brand surface, focus ring and shadow tracks automatically. */
+  --brand: var(--color-primary-500);
+  --brand-hover: var(--color-primary-600);
+  --brand-subtle: var(--color-primary-50);
+  --brand-rgb: var(--color-primary-rgb);
+  --on-brand: #FFFFFF;
+
+  --accent-blue: #0049C6;
+  --accent-pink: #FFA2C0;
+  --accent-amber: #FFCE73;
+
+  --success: #7FBA7A;
+  --warning: #FFCE73;
+  --danger: #FF754C;
+  --info: #3F8CFF;
+
+  --risk-critical: var(--color-risk-critical-500);
+  --risk-high:     var(--color-risk-high-500);
+  --risk-moderate: var(--color-risk-moderate-500);
+  --risk-healthy:  var(--color-risk-healthy-500);
+  --risk-strong:   var(--color-risk-strong-500);
+
+  --focus-ring: rgba(var(--brand-rgb), 0.40);
+  --shadow-xs: 0 1px 2px rgba(17, 20, 45, 0.06);
+  --shadow-sm: 0 2px 8px rgba(17, 20, 45, 0.06);
+  --shadow-md: 0 8px 24px rgba(17, 20, 45, 0.08);
+  --shadow-lg: 0 24px 48px rgba(17, 20, 45, 0.12);
+  --shadow-soft: 0 12px 32px rgba(17, 20, 45, 0.10);
+  --shadow-brand: 0 8px 24px rgba(var(--brand-rgb), 0.32);
+  --shadow-circle: 0 6px 16px rgba(227, 230, 236, 0.9);
+}
+
+/* ============================================================
+   SEMANTIC ROLES — DARK
+   ============================================================ */
+[data-theme="dark"] {
+  --canvas: #0F0F10;
+  --bg: #161616;
+  --bg-subtle: #1B1D21;
+  --surface: #1F2128;
+  --surface-raised: #242730;
+  --surface-sunken: #161616;
+
+  --border: #29292C;
+  --border-subtle: #242730;
+  --border-strong: #3F4050;
+
+  --text: #FFFFFF;
+  --text-secondary: #B2B3BD;
+  --text-muted: #808191;
+  --text-inverse: #11142D;
+
+  --brand: #9A78E6;
+  --brand-hover: #B29BEE;
+  --brand-subtle: #2A1E52;
+  --brand-rgb: 154, 120, 230;
+  --on-brand: #FFFFFF;
+
+  --accent-blue: #5F75EE;
+  --accent-pink: #FFA2C0;
+  --accent-amber: #FFCE73;
+
+  --success: #7FBA7A;
+  --warning: #FFCE73;
+  --danger: #FF754C;
+  --info: #3F8CFF;
+
+  --risk-critical: var(--color-risk-critical-500);
+  --risk-high:     var(--color-risk-high-500);
+  --risk-moderate: var(--color-risk-moderate-500);
+  --risk-healthy:  var(--color-risk-healthy-500);
+  --risk-strong:   var(--color-risk-strong-500);
+
+  --focus-ring: rgba(var(--brand-rgb), 0.50);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.40);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.40);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 24px 48px rgba(0, 0, 0, 0.55);
+  --shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.50);
+  --shadow-brand: 0 8px 24px rgba(var(--brand-rgb), 0.45);
+  --shadow-circle: 0 6px 16px rgba(0, 0, 0, 0.45);
+}
