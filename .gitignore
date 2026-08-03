@@ -6,6 +6,4 @@
 /.react-router/
 /build/
 
-# Materialy kursu i lokalna konfiguracja
 *.zip
-/.claude/
