@@ -47,9 +47,7 @@ export async function loader({
   const posts = postsJson.data.map((item: StrapiPost) => ({
     ...item,
     readingTime: item.readingMinutes,
-    image: item.image?.url
-      ? `${import.meta.env.VITE_STRAPI_URL}${item.image.url}`
-      : "/images/no-image.png",
+    image: item.image?.url ? `${item.image.url}` : "/images/no-image.png",
   }));
 
   return { projects, posts };
