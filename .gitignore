@@ -9,3 +9,5 @@
 *.zip
 .vscode
 _unity-dg/
+.vercel
+.env*
