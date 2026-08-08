@@ -7,7 +7,8 @@ pagination all happen client-side, so browsing never waits on the network.
 
 > *Built on a design system, not on defaults.*
 
-**API:** [react-portfolio-backend-pld8.onrender.com](https://react-portfolio-backend-pld8.onrender.com)
+**Live:** [react-portfolio-frontend-woad.vercel.app](https://react-portfolio-frontend-woad.vercel.app)
+· **API:** [react-portfolio-backend-pld8.onrender.com](https://react-portfolio-backend-pld8.onrender.com)
 · **CMS repo:** [react-portfolio-backend](https://github.com/WebDevCaveman/react-portfolio-backend)
 
 *Portfolio project. Content is authored in Strapi; images are served by Cloudinary.*
@@ -35,6 +36,9 @@ About · Contact.
 
 **React Router 8 in framework mode** — file-based routes, server loaders, typed route modules.
 
+- **Prerendered at build time.** `react-router.config.ts` asks Strapi for every post slug and
+  project id, so all 19 pages ship as ready HTML and nothing queries the CMS at runtime —
+  the API only has to be awake while the site is being built.
 - **React 19** + **TypeScript**, strict, with types generated per route (`react-router typegen`).
 - **Tailwind CSS 4** wired to the Unity token set through `@theme inline` — semantic utilities
   like `bg-surface`, `text-brand`, `text-h4`, `ring-focus` instead of raw values.
