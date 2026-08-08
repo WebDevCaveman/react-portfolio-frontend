@@ -1,35 +1,42 @@
-// W tym przypadku, dla nauki wykorzystujemy Client Loader i pobieramy dane na froncie. W praktyce, w przypadku projektow produkcyjnych, powinnismy korzystac z Server Loader, aby pobrac dane z backendu i przekazac je do komponentu. Ale skoro jesteśmy na froncie musimy zadbac o sprawdzenie poprawnosci odpowiedzi if (!res.ok) oraz o dodanie loadera, ktory bedzie wyswietlany gdy bedziemy pobierac dane. W przypadku Server Loader nie musimy sie o to martwic.
 import { Link } from "react-router";
 import type { Route } from "./+types/details";
-import type { Project } from "~/types";
+import type { Project, StrapiProject, StrapiResponse } from "~/types";
 import { Icon } from "~/components/Icon";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export async function clientLoader({
-  request,
-  params,
-}: Route.ClientLoaderArgs): Promise<Project> {
-  const res = await fetch(`${API_URL}/projects/${params.id}`);
-  if (!res.ok) {
-    throw new Response("Project not found", { status: 404 });
-  }
-  const project: Project = await res.json();
-  return project;
-}
-
-export function HydrateFallback() {
-  return (
-    <div className="flex h-full w-full items-center justify-center">
-      <p className="text-caption-1 font-semibold uppercase tracking-widest text-brand">
-        Loading project details...
-      </p>
-    </div>
+export async function loader({ request, params }: Route.LoaderArgs) {
+  // Sposób na pobranie pojedynczego elementu ze Strapi jest taki, ze w zapytaniu do API dodajemy query param "filter[documentId][$eq]=<documentId>". W tym przypadku, documentId jest przekazywany jako parametr w sciezce (route) i mozemy go pobrac z obiektu params. W ten sposob Strapi zwroci nam tylko jeden element, ktory ma documentId rowne temu, ktorego szukamy.
+  const { documentId } = params;
+  const res = await fetch(
+    `${API_URL}/projects?filters[documentId][$eq]=${documentId}&populate=*`,
   );
+
+  if (!res.ok) {
+    throw new Response("Failed to fetch project", { status: res.status });
+  }
+
+  const json: StrapiResponse<StrapiProject> = await res.json();
+  const item = json.data[0];
+
+  const project: Project = {
+    id: item.id,
+    documentId: item.documentId,
+    title: item.title,
+    shortDescription: item.shortDescription,
+    description: item.description,
+    category: item.category,
+    featured: item.featured,
+    date: item.date,
+    url: item.url,
+    image: item.image?.url ? `${item.image.url}` : "/images/no-image.png",
+  };
+
+  return { project };
 }
 
 const ProjectDetailsPage = ({ loaderData }: Route.ComponentProps) => {
-  const project = loaderData as Project;
+  const { project } = loaderData;
   return (
     <div className="py-8">
       <Link

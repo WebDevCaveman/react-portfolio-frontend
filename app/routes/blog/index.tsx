@@ -1,26 +1,35 @@
 import { useState } from "react";
 import type { Route } from "./+types/index";
-import type { PostMeta } from "~/types";
+import type { PostMeta, StrapiPost, StrapiResponse } from "~/types";
 import PostCard from "~/components/PostCard";
 import Pagination from "~/components/Pagination";
 import PostsFilter from "~/components/PostsFilter";
+import { AnimatePresence, motion } from "motion/react";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export async function loader({
   request,
 }: Route.LoaderArgs): Promise<{ posts: PostMeta[] }> {
-  const url = new URL("/posts-meta.json", request.url);
-  const response = await fetch(url.href);
-  if (!response.ok) {
+  const res = await fetch(`${API_URL}/posts?populate=image&sort=date:desc`);
+  if (!res.ok) {
     throw new Error("Failed to fetch posts metadata");
   }
-  const data = await response.json();
-  data.sort((a: PostMeta, b: PostMeta) => {
-    const dateA = new Date(a.date);
-    const dateB = new Date(b.date);
-    return dateB.getTime() - dateA.getTime();
-  });
 
-  return { posts: data };
+  const json: StrapiResponse<StrapiPost> = await res.json();
+  const posts = json.data.map((item: StrapiPost) => ({
+    id: item.id,
+    documentId: item.documentId,
+    title: item.title,
+    slug: item.slug,
+    excerpt: item.excerpt,
+    body: item.body,
+    readingTime: item.readingMinutes,
+    date: item.date,
+    image: item.image?.url ? `${item.image.url}` : "/images/no-image.png",
+  }));
+
+  return { posts };
 }
 
 const BlogPage = ({ loaderData }: Route.ComponentProps) => {
@@ -61,15 +70,27 @@ const BlogPage = ({ loaderData }: Route.ComponentProps) => {
 
       <PostsFilter value={query} onChange={handleQueryChange} />
 
+      {/* ta sama animacja co na /projects - opis dzialania w routes/projects/index.tsx */}
       {currentPosts.length === 0 ? (
         <p className="mt-10 text-body text-text-secondary">
           No posts match “{query}”.
         </p>
       ) : (
-        <div className="mt-6 grid gap-6 md:grid-cols-2">
-          {currentPosts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
+        <div className="relative mt-6 grid gap-6 md:grid-cols-2">
+          <AnimatePresence mode="popLayout">
+            {currentPosts.map((post) => (
+              <motion.div
+                key={post.id}
+                layout
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+              >
+                <PostCard post={post} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       )}
 

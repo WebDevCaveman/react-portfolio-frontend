@@ -7,6 +7,8 @@ type FeaturedProjectsProps = {
 };
 
 const FeaturedProjects = ({ projects, count = 4 }: FeaturedProjectsProps) => {
+  if (!projects || projects.length === 0) return null;
+
   const featuredProjects = projects.slice(0, count);
 
   return (

@@ -1,35 +1,46 @@
 import ReactMarkdown from "react-markdown";
 import { Link } from "react-router";
 import type { Route } from "./+types/details";
-import type { PostMeta } from "~/types";
+import type { PostMeta, StrapiPost, StrapiResponse } from "~/types";
 import { Icon } from "~/components/Icon";
 
-export async function loader({ request, params }: Route.LoaderArgs) {
+const API_URL = import.meta.env.VITE_API_URL;
+
+export async function loader({ params }: Route.LoaderArgs) {
   const { slug } = params;
-  const url = new URL("/posts-meta.json", request.url);
-  const response = await fetch(url.href);
-  if (!response.ok) {
-    throw new Error("Failed to fetch posts metadata");
+
+  // Post pobieramy po slugu, a nie po documentId - route to /blog/:slug. Strapi nie ma
+  // endpointu "po slugu", wiec filtrujemy kolekcje: zawsze dostajemy tablice (0 lub 1 element).
+  const res = await fetch(
+    `${API_URL}/posts?filters[slug][$eq]=${slug}&populate=image`,
+  );
+  if (!res.ok) {
+    throw new Error("Failed to fetch post");
   }
 
-  const allPostsMeta = (await response.json()) as PostMeta[];
-  const postMeta = allPostsMeta.find((post) => post.slug === slug);
+  const json: StrapiResponse<StrapiPost> = await res.json();
+  const item = json.data[0];
 
-  if (!postMeta) {
+  if (!item) {
     throw new Response(`Post with slug "${slug}" not found`, { status: 404 });
   }
 
-  // Skoro mamy powyzej pobrany dany post to na jego podstawie musimy teraz dynamicznie pobrac dane z odpowiedniego pliki Markdown, ktory potem przekształcimy sobie na kod HTML. W tym przypadku musimy użyć dynamicznego importu, aby pobrać plik Markdown na podstawie slug. W tym przypadku używamy składni `import()` z szablonem string, aby wskazać ścieżkę do pliku Markdown. Dodatkowo dodajemy `?raw`, aby pobrać zawartość pliku jako surowy tekst, a nie jako moduł JavaScript.
-  const markdown = await import(`../../posts/${slug}.md?raw`);
-  return { postMeta, markdown: markdown.default };
+  // body ze Strapi to markdown - renderuje go ReactMarkdown, tak jak wczesniej pliki .md
+  const post: PostMeta = {
+    ...item,
+    readingTime: item.readingMinutes,
+    image: item.image?.url ? `${item.image.url}` : "/images/no-image.png",
+  };
+
+  return { post };
 }
 
 // loaderData jest undefined, gdy loader rzuci blad i wejdzie ErrorBoundary
 export function meta({ loaderData }: Route.MetaArgs) {
   if (!loaderData) return [{ title: "Post not found — Dev Portfolio" }];
   return [
-    { title: `${loaderData.postMeta.title} — Dev Portfolio` },
-    { name: "description", content: loaderData.postMeta.excerpt },
+    { title: `${loaderData.post.title} — Dev Portfolio` },
+    { name: "description", content: loaderData.post.excerpt },
   ];
 }
 
@@ -45,7 +56,7 @@ const proseClass = [
 ].join(" ");
 
 const BlogDetailsPage = ({ loaderData }: Route.ComponentProps) => {
-  const { postMeta, markdown } = loaderData;
+  const { post } = loaderData;
 
   return (
     <div className="py-8">
@@ -57,24 +68,38 @@ const BlogDetailsPage = ({ loaderData }: Route.ComponentProps) => {
         Back to blog
       </Link>
 
-      <article className="mt-6 max-w-3xl rounded-[18px] bg-surface p-8 shadow-sm md:p-10">
-        <time
-          dateTime={postMeta.date}
-          className="text-caption-1 font-medium text-text-muted"
-        >
-          {new Date(postMeta.date).toLocaleDateString("en-EN")}
-        </time>
-        <h1 className="mt-3 font-display text-h4 font-bold text-text">
-          {postMeta.title}
-        </h1>
-        <p className="mt-4 text-title text-text-secondary">
-          {postMeta.excerpt}
-        </p>
+      <article className="mt-6 max-w-3xl overflow-hidden rounded-[18px] bg-surface shadow-sm">
+        <img
+          src={post.image}
+          alt={post.title}
+          className="aspect-video w-full object-cover"
+        />
 
-        <hr className="mt-8 border-border-subtle" />
+        <div className="p-8 md:p-10">
+          <div className="flex items-center gap-2 text-caption-1 font-medium text-text-muted">
+            <time dateTime={post.date}>
+              {new Date(post.date).toLocaleDateString("en-EN")}
+            </time>
+            {post.readingTime ? (
+              <>
+                <span aria-hidden>·</span>
+                <span className="inline-flex items-center gap-1">
+                  <Icon name="clock" size={14} />
+                  {post.readingTime} min read
+                </span>
+              </>
+            ) : null}
+          </div>
+          <h1 className="mt-3 font-display text-h4 font-bold text-text">
+            {post.title}
+          </h1>
+          <p className="mt-4 text-title text-text-secondary">{post.excerpt}</p>
 
-        <div className={proseClass}>
-          <ReactMarkdown>{markdown}</ReactMarkdown>
+          <hr className="mt-8 border-border-subtle" />
+
+          <div className={proseClass}>
+            <ReactMarkdown>{post.body}</ReactMarkdown>
+          </div>
         </div>
       </article>
     </div>

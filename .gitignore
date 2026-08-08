@@ -7,3 +7,5 @@
 /build/
 
 *.zip
+.vscode
+_unity-dg/

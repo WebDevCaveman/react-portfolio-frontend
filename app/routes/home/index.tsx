@@ -1,5 +1,11 @@
 import type { Route } from "./+types/index";
-import type { PostMeta, Project } from "~/types";
+import type {
+  PostMeta,
+  Project,
+  StrapiPost,
+  StrapiProject,
+  StrapiResponse,
+} from "~/types";
 import FeaturedProjects from "~/components/FeaturedProjects";
 import LatestPosts from "~/components/LatestPosts";
 const API_URL = import.meta.env.VITE_API_URL;
@@ -17,20 +23,36 @@ export function meta({}: Route.MetaArgs) {
 export async function loader({
   request,
 }: Route.LoaderArgs): Promise<{ projects: Project[]; posts: PostMeta[] }> {
-  const postsUrl = new URL("/posts-meta.json", request.url);
   const [projectsRes, postsRes] = await Promise.all([
-    fetch(`${API_URL}/projects`),
-    fetch(postsUrl.href),
-  ]);
-  const [projects, posts] = await Promise.all([
-    projectsRes.json(),
-    postsRes.json(),
+    fetch(`${API_URL}/projects?filters[featured][$eq]=true&populate=*`),
+    fetch(`${API_URL}/posts?populate=image&sort=date:desc`),
   ]);
 
-  return {
-    projects: projects.filter((project: Project) => project.featured),
-    posts,
-  };
+  const projectsJson: StrapiResponse<StrapiProject> = await projectsRes.json();
+  const postsJson: StrapiResponse<StrapiPost> = await postsRes.json();
+
+  const projects = projectsJson.data.map((item: StrapiProject) => ({
+    id: item.id,
+    documentId: item.documentId,
+    title: item.title,
+    shortDescription: item.shortDescription,
+    description: item.description,
+    category: item.category,
+    featured: item.featured,
+    date: item.date,
+    url: item.url,
+    image: item.image?.url ? `${item.image.url}` : "/images/no-image.png",
+  }));
+
+  const posts = postsJson.data.map((item: StrapiPost) => ({
+    ...item,
+    readingTime: item.readingMinutes,
+    image: item.image?.url
+      ? `${import.meta.env.VITE_STRAPI_URL}${item.image.url}`
+      : "/images/no-image.png",
+  }));
+
+  return { projects, posts };
 }
 
 const HomePage = ({ loaderData }: Route.ComponentProps) => {

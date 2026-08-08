@@ -1,20 +1,34 @@
 import type { Route } from "./+types/index";
-import type { Project } from "~/types";
+import type { Project, StrapiResponse, StrapiProject } from "~/types";
 import ProjectCard from "~/components/ProjectCard";
 import Pagination from "~/components/Pagination";
 import CategoryFilter from "~/components/CategoryFilter";
 import { useState } from "react";
-// motion/react to paczka "motion" (motion.dev) - nastepca Framer Motion
 import { AnimatePresence, motion } from "motion/react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+// Aby w Strapi pobrac wszystkie pola relacji (np. obrazki, kategorie), trzeba dodac query param "populate=*". W przeciwnym razie Strapi zwroci tylko ID relacji, a nie jej zawartosc.
 export async function loader({
   request,
 }: Route.LoaderArgs): Promise<{ projects: Project[] }> {
-  const res = await fetch(`${API_URL}/projects`);
-  const data = await res.json();
-  return { projects: data };
+  const res = await fetch(`${API_URL}/projects?populate=*`);
+  const json: StrapiResponse<StrapiProject> = await res.json();
+
+  const projects = json.data.map((item: StrapiProject) => ({
+    id: item.id,
+    documentId: item.documentId,
+    title: item.title,
+    shortDescription: item.shortDescription,
+    description: item.description,
+    category: item.category,
+    featured: item.featured,
+    date: item.date,
+    url: item.url,
+    image: item.image?.url ? `${item.image.url}` : "/images/no-image.png",
+  }));
+
+  return { projects };
 }
 
 const ProjectsPage = ({ loaderData }: Route.ComponentProps) => {
